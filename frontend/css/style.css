@@ -267,3 +267,86 @@ p {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Professional Home Page Hero Styling */
+.hero-container {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.hero-card {
+    background: #ffffff;
+    max-width: 680px;
+    width: 100%;
+    padding: 3rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    border: 1px solid #e1e4e8;
+}
+
+.hero-card .badge {
+    display: inline-block;
+    background-color: #ebf5fb;
+    color: #3498db;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    margin-bottom: 1rem;
+}
+
+.hero-card h2 {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.hero-card p {
+    font-size: 1.05rem;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+}
+
+.btn-secondary:hover {
+    background-color: #bdc3c7;
+}
+
+@media (max-width: 600px) {
+    .hero-card {
+        padding: 2rem 1.5rem;
+    }
+    .hero-card h2 {
+        font-size: 1.7rem;
+    }
+    .hero-actions {
+        flex-direction: column;
+    }
+}
