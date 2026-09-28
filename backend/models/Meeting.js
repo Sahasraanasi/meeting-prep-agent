@@ -3,32 +3,24 @@ const mongoose = require('mongoose');
 const meetingSchema = new mongoose.Schema(
   {
     title: {
-      type: String,
-      required: [true, 'Meeting title is required'],
-      trim: true
+      type: String
     },
     date: {
-      type: Date,
-      required: [true, 'Meeting date is required']
+      type: Date
     },
     contactId: {
-      type: mongoose.Schema.Types.Mixed,
-      ref: 'Contact',
-      default: null
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Contact'
     },
     notes: {
-      type: String,
-      default: '',
-      trim: true
+      type: String
     },
     summary: {
-      type: String,
-      default: '',
-      trim: true
+      type: String
     }
   },
   {
-    timestamps: true
+    versionKey: false
   }
 );
 

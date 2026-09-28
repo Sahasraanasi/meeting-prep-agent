@@ -2,33 +2,18 @@ const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: [true, 'Task title is required'],
-      trim: true
-    },
     description: {
-      type: String,
-      default: '',
-      trim: true
-    },
-    status: {
-      type: String,
-      enum: ['Pending', 'In Progress', 'Completed'],
-      default: 'Pending'
+      type: String
     },
     dueDate: {
-      type: Date,
-      default: null
+      type: Date
     },
-    contactId: {
-      type: mongoose.Schema.Types.Mixed,
-      ref: 'Contact',
-      default: null
+    status: {
+      type: String
     }
   },
   {
-    timestamps: true
+    versionKey: false
   }
 );
 
