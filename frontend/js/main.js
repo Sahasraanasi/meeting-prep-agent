@@ -205,22 +205,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderMeetings();
 
-        generateSummaryBtn.addEventListener('click', () => {
-            const notes = document.getElementById('meetingNotes').value.trim();
-            if (!notes) {
-                showToast('Please enter some meeting notes first!', 'error');
-                return;
-            }
+        generateSummaryBtn.addEventListener('click', async () => {
+    const notes = document.getElementById('meetingNotes').value.trim();
 
-            setLoadingState(generateSummaryBtn, null, true);
+    if (!notes) {
+        showToast('Please enter some meeting notes first!', 'error');
+        return;
+    }
 
-            setTimeout(() => {
-                const summaryBox = document.getElementById('meetingSummary');
-                summaryBox.value = `• Key Discussion: Reviewed project requirements and milestones based on notes.\n• Action Items identified from notes.\n• Next follow-up scheduled.`;
-                setLoadingState(generateSummaryBtn, null, false, "Generate Summary");
-                showToast('Summary generated successfully!');
-            }, 800);
+    setLoadingState(generateSummaryBtn, null, true);
+
+    try {
+        const response = await fetch('http://localhost:5000/ai/summary', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ notes })
         });
+
+        const result = await response.json();
+
+        if (result.success) {
+            document.getElementById('meetingSummary').value = result.data;
+            showToast('Summary generated successfully!');
+        } else {
+            showToast('Failed to generate summary.', 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        showToast('Backend connection failed.', 'error');
+    }
+
+    setLoadingState(generateSummaryBtn, null, false, "Generate Summary");
+});
 
         meetingForm.addEventListener('submit', (e) => {
             e.preventDefault();
