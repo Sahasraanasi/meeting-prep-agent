@@ -1,7 +1,6 @@
-const { generateSummary } = require('../ai/summaryAgent');
-const { extractTasks } = require('../ai/taskExtractor');
-const { generateBrief } = require('../ai/briefGenerator');
-
+const generateSummary = require('../ai/summaryAgent');
+const extractTasks = require('../ai/taskExtractor');
+const generateBrief = require('../ai/briefGenerator');
 // POST /ai/summary
 exports.getSummary = async (req, res) => {
   try {
