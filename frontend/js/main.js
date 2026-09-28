@@ -1,9 +1,6 @@
 /**
- * DataService: Abstraction layer for data persistence.
- * Currently uses localStorage. 
- * NOTE FOR BACKEND INTEGRATION: Replace these methods with fetch() calls to Express API endpoints.
+ * Custom Toast Notification System
  */
-// Custom Toast Notification System
 function showToast(message, type = 'success') {
     let container = document.getElementById('toastContainer');
     if (!container) {
@@ -17,12 +14,10 @@ function showToast(message, type = 'success') {
     toast.textContent = message;
     container.appendChild(toast);
 
-    // Trigger transition
     setTimeout(() => {
         toast.classList.add('show');
     }, 10);
 
-    // Remove after 3 seconds
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
@@ -30,15 +25,41 @@ function showToast(message, type = 'success') {
         }, 300);
     }, 3000);
 }
+
+/**
+ * Loading State Helper
+ */
+function setLoadingState(buttonElement, spinnerElement, isLoading, defaultText = "Generate Summary") {
+    if (isLoading) {
+        buttonElement.disabled = true;
+        buttonElement.textContent = "Analyzing...";
+        if (spinnerElement) spinnerElement.style.display = 'flex';
+    } else {
+        buttonElement.disabled = false;
+        buttonElement.textContent = defaultText;
+        if (spinnerElement) spinnerElement.style.display = 'none';
+    }
+}
+
+/**
+ * Validation Helper
+ */
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+/**
+ * DataService: Abstraction layer for data persistence.
+ * Currently uses localStorage. 
+ * NOTE FOR BACKEND INTEGRATION: Replace these methods with fetch() calls to Express API endpoints.
+ */
 const DataService = {
-    // User Profile
     getUser: () => JSON.parse(localStorage.getItem('meetingAgentUser')) || {},
     saveUser: (userData) => {
         localStorage.setItem('meetingAgentUser', JSON.stringify(userData));
         return Promise.resolve(userData);
     },
 
-    // Contacts
     getContacts: () => JSON.parse(localStorage.getItem('meetingAgentContacts')) || [],
     addContact: (contactData) => {
         const contacts = DataService.getContacts();
@@ -47,7 +68,6 @@ const DataService = {
         return Promise.resolve(contactData);
     },
 
-    // Meetings
     getMeetings: () => JSON.parse(localStorage.getItem('meetingAgentMeetings')) || [],
     addMeeting: (meetingData) => {
         const meetings = DataService.getMeetings();
@@ -56,23 +76,6 @@ const DataService = {
         return Promise.resolve(meetingData);
     }
 };
-
-// Helper: Show feedback message on forms
-function showFeedback(elementId, message, isError = false) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.textContent = message;
-    el.className = isError ? 'alert-error' : 'alert-success';
-    el.style.display = 'block';
-    setTimeout(() => {
-        el.style.display = 'none';
-    }, 3500);
-}
-
-// Validation Helper
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value.trim();
 
             if (!isValidEmail(email)) {
-                showFeedback('profileFeedback', 'Please enter a valid email address.', true);
+                showToast('Please enter a valid email address.', 'error');
                 return;
             }
 
@@ -104,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             DataService.saveUser(userData).then(() => {
-                showFeedback('profileFeedback', 'Profile saved successfully!');
+                showToast('Profile saved successfully!');
             });
         });
     }
@@ -142,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('contactEmail').value.trim();
 
             if (!isValidEmail(email)) {
-                alert('Please enter a valid email address for the contact.');
+                showToast('Please enter a valid email address for the contact.', 'error');
                 return;
             }
 
@@ -157,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DataService.addContact(newContact).then(() => {
                 contactForm.reset();
                 renderContacts();
+                showToast('Contact added successfully!');
             });
         });
     }
@@ -204,11 +208,18 @@ document.addEventListener('DOMContentLoaded', () => {
         generateSummaryBtn.addEventListener('click', () => {
             const notes = document.getElementById('meetingNotes').value.trim();
             if (!notes) {
-                alert('Please enter some meeting notes before generating a summary.');
+                showToast('Please enter some meeting notes first!', 'error');
                 return;
             }
-            const summaryBox = document.getElementById('meetingSummary');
-            summaryBox.value = `• Key Discussion: Reviewed project requirements and milestones.\n• Action Items: Assigned follow-up tasks.\n• Next Steps: Scheduled sync.`;
+
+            setLoadingState(generateSummaryBtn, null, true);
+
+            setTimeout(() => {
+                const summaryBox = document.getElementById('meetingSummary');
+                summaryBox.value = `• Key Discussion: Reviewed project requirements and milestones based on notes.\n• Action Items identified from notes.\n• Next follow-up scheduled.`;
+                setLoadingState(generateSummaryBtn, null, false, "Generate Summary");
+                showToast('Summary generated successfully!');
+            }, 800);
         });
 
         meetingForm.addEventListener('submit', (e) => {
@@ -225,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DataService.addMeeting(newMeeting).then(() => {
                 meetingForm.reset();
                 renderMeetings();
-                alert('Meeting saved successfully!');
+                showToast('Meeting saved successfully!');
             });
         });
     }
