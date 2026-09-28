@@ -125,36 +125,78 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             contactsList.innerHTML = '';
-            contacts.forEach((contact) => {
-                const card = document.createElement('div');
-                card.className = 'contact-card';
-                card.innerHTML = `
-                    <h4>${contact.name} (${contact.jobTitle})</h4>
-                    <p><strong>Company:</strong> ${contact.company}</p>
-                    <p><strong>Email:</strong> ${contact.email}</p>
-                    <p><strong>Phone:</strong> ${contact.phone}</p>
-                `;
-                contactsList.appendChild(card);
-            });
+            contacts.forEach((contact, index) => {
+    const card = document.createElement('div');
+    card.className = 'contact-card';
+
+    card.innerHTML = `
+        <h4>${contact.name} (${contact.jobTitle})</h4>
+        <p><strong>Company:</strong> ${contact.company}</p>
+        <p><strong>Email:</strong> ${contact.email}</p>
+        <p><strong>Phone:</strong> ${contact.phone}</p>
+
+        <button class="delete-contact-btn"
+                data-index="${index}"
+                style="
+                    margin-top:10px;
+                    background:#e74c3c;
+                    color:white;
+                    border:none;
+                    padding:8px 12px;
+                    border-radius:4px;
+                    cursor:pointer;">
+            Delete
+        </button>
+    `;
+
+    contactsList.appendChild(card);
+});
+
+document.querySelectorAll('.delete-contact-btn').forEach(button => {
+    button.addEventListener('click', () => {
+
+        const index = button.dataset.index;
+
+        const contacts = DataService.getContacts();
+
+        contacts.splice(index, 1);
+
+        localStorage.setItem(
+            'meetingAgentContacts',
+            JSON.stringify(contacts)
+        );
+
+        renderContacts();
+
+        showToast('Contact deleted successfully!');
+    });
+});
         };
 
         renderContacts();
 
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('contactEmail').value.trim();
+       contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-            if (!isValidEmail(email)) {
-                showToast('Please enter a valid email address for the contact.', 'error');
-                return;
-            }
+    const email = document.getElementById('contactEmail').value.trim();
+    const phone = document.getElementById('contactPhone').value.trim();
 
-            const newContact = {
+    if (!isValidEmail(email)) {
+        showToast('Please enter a valid email address for the contact.', 'error');
+        return;
+    }
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+        showToast('Please enter a valid 10-digit phone number.', 'error');
+        return;
+    }
+
+    const newContact = {
                 name: document.getElementById('contactName').value.trim(),
                 company: document.getElementById('contactCompany').value.trim(),
                 jobTitle: document.getElementById('contactJobTitle').value.trim(),
                 email: email,
-                phone: document.getElementById('contactPhone').value.trim()
+                phone: phone
             };
 
             DataService.addContact(newContact).then(() => {
@@ -189,18 +231,52 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             meetingsList.innerHTML = '';
-            meetings.forEach((meeting) => {
-                const card = document.createElement('div');
-                card.className = 'meeting-card';
-                card.innerHTML = `
-                    <h4>${meeting.title}</h4>
-                    <p><strong>Date:</strong> ${new Date(meeting.date).toLocaleString()}</p>
-                    <p><strong>Contact:</strong> ${meeting.contactId}</p>
-                    <p><strong>Notes:</strong> ${meeting.notes}</p>
-                    <p><strong>Summary:</strong> ${meeting.summary || 'No summary provided.'}</p>
-                `;
-                meetingsList.appendChild(card);
-            });
+           meetings.forEach((meeting, index) => {
+    const card = document.createElement('div');
+    card.className = 'meeting-card';
+
+    card.innerHTML = `
+        <h4>${meeting.title}</h4>
+        <p><strong>Date:</strong> ${new Date(meeting.date).toLocaleString()}</p>
+        <p><strong>Contact:</strong> ${meeting.contactId}</p>
+        <p><strong>Notes:</strong> ${meeting.notes}</p>
+        <p><strong>Summary:</strong> ${meeting.summary || 'No summary provided.'}</p>
+
+        <button class="delete-meeting-btn"
+                data-index="${index}"
+                style="
+                    margin-top:10px;
+                    background:#e74c3c;
+                    color:white;
+                    border:none;
+                    padding:8px 12px;
+                    border-radius:4px;
+                    cursor:pointer;">
+            Delete Meeting
+        </button>
+    `;
+
+    meetingsList.appendChild(card);
+});
+document.querySelectorAll('.delete-meeting-btn').forEach(button => {
+    button.addEventListener('click', () => {
+
+        const index = button.dataset.index;
+
+        const meetings = DataService.getMeetings();
+
+        meetings.splice(index, 1);
+
+        localStorage.setItem(
+            'meetingAgentMeetings',
+            JSON.stringify(meetings)
+        );
+
+        renderMeetings();
+
+        showToast('Meeting deleted successfully!');
+    });
+});
         };
 
         renderMeetings();
