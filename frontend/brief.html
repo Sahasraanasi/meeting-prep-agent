@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Prep Agent - Meeting Brief</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .container {
+            text-align: left;
+            max-width: 850px;
+        }
+        .brief-box {
+            background: #fff;
+            border: 1px solid #dcdde1;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .brief-section {
+            margin-bottom: 1.5rem;
+        }
+        .brief-section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.3rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <h1>Meeting Prep Agent</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="contacts.html">Contacts</a></li>
+                <li><a href="meeting.html">Meeting Notes</a></li>
+                <li><a href="brief.html" class="active">Meeting Brief</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container">
+        <h2>Executive Meeting Brief</h2>
+        <p>Select a saved meeting below to generate your comprehensive preparation brief.</p>
+
+        <div style="margin-top: 1.5rem;">
+            <label for="selectMeetingBrief" style="font-weight: 600; color: #2c3e50; display: block; margin-bottom: 0.5rem;">Select Meeting:</label>
+            <select id="selectMeetingBrief" style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;">
+                <option value="">-- Choose a Saved Meeting --</option>
+            </select>
+        </div>
+
+        <!-- Dynamic Brief Display Container -->
+        <div id="briefOutputContainer"></div>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

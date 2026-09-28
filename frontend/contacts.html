@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Prep Agent - Contacts</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .container {
+            text-align: left;
+            max-width: 900px;
+        }
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .contact-card {
+            background: #fdfdfd;
+            border: 1px solid #e1e8ed;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        .contact-card h4 {
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+        .contact-card p {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <h1>Meeting Prep Agent</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="contacts.html" class="active">Contacts</a></li>
+                <li><a href="meeting.html">Meeting Notes</a></li>
+                <li><a href="brief.html">Meeting Brief</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container">
+        <h2>Manage Contacts</h2>
+        <p>Add and view professional contacts you are meeting with.</p>
+        
+        <div class="contacts-grid">
+            <!-- Add Contact Form -->
+            <div>
+                <h3>Add New Contact</h3>
+                <form id="contactForm" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="contactName">Name:</label>
+                        <input type="text" id="contactName" required placeholder="e.g. Sarah Jenkins">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactCompany">Company:</label>
+                        <input type="text" id="contactCompany" required placeholder="e.g. TechCorp">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactJobTitle">Job Title:</label>
+                        <input type="text" id="contactJobTitle" required placeholder="e.g. CTO">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email:</label>
+                        <input type="email" id="contactEmail" required placeholder="e.g. sarah@techcorp.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactPhone">Phone:</label>
+                        <input type="text" id="contactPhone" required placeholder="e.g. +1-555-0192">
+                    </div>
+                    <button type="submit" class="btn">Add Contact</button>
+                </form>
+            </div>
+
+            <!-- Contacts List Display -->
+            <div>
+                <h3>Saved Contacts</h3>
+                <div id="contactsList" style="margin-top: 1rem; max-height: 400px; overflow-y: auto;">
+                    <p style="color: #7f8c8d;">No contacts added yet.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
