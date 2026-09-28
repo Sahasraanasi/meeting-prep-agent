@@ -3,6 +3,7 @@ const cors = require('cors');
 
 const contactRoutes = require('./routes/contactRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use('/contacts', contactRoutes);
 app.use('/meetings', meetingRoutes);
+app.use('/tasks', taskRoutes);
 
 // Health check route
 app.get('/', (req, res) => {
