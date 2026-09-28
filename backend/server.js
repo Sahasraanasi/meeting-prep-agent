@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const contactRoutes = require('./routes/contactRoutes');
+const meetingRoutes = require('./routes/meetingRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // Routes
 app.use('/contacts', contactRoutes);
+app.use('/meetings', meetingRoutes);
 
 // Health check route
 app.get('/', (req, res) => {
