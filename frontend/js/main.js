@@ -438,3 +438,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// --- Milestone B: Login Form Handling ---
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!identifier || !password) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            try {
+                const existingUsers = JSON.parse(localStorage.getItem('mpa_users')) || [];
+                
+                // Match either username or email and password
+                const validUser = existingUsers.find(u => 
+                    (u.username === identifier || u.email === identifier) && u.password === password
+                );
+
+                if (validUser) {
+                    localStorage.setItem('mpa_current_user', JSON.stringify(validUser));
+                    showToast('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    showToast('Invalid username/email or password.', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('An error occurred during login. Please try again.', 'error');
+            }
+        });
+    }
+});
