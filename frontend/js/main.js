@@ -562,3 +562,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ... (your existing functions and event listeners in main.js) ...
+
+// PASTE THE LOGOUT SCRIPT AT THE VERY BOTTOM OF THE FILE:
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            // Clear user session from localStorage
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.clear();
+
+            // Redirect to login page
+            window.location.href = 'login.html';
+        });
+    }
+});
