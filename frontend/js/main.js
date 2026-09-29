@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Clear user session from localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            localStorage.clear();
+            localStorage.removeItem('isLoggedIn');
 
             // Redirect to login page
             window.location.href = 'login.html';
