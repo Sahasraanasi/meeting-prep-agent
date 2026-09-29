@@ -10,6 +10,10 @@ const taskSchema = new mongoose.Schema(
     },
     status: {
       type: String
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   },
   {
