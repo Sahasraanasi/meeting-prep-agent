@@ -133,16 +133,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileForm = document.getElementById('profileForm');
     if (profileForm) {
         const user = DataService.getUser();
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const companyInput = document.getElementById('company');
+        const roleInput = document.getElementById('role');
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+        // Populate initial user data if available
         if (user.name) {
-            document.getElementById('name').value = user.name || '';
-            document.getElementById('email').value = user.email || '';
-            document.getElementById('company').value = user.company || '';
-            document.getElementById('role').value = user.role || '';
+            nameInput.value = user.name || '';
+            emailInput.value = user.email || '';
+            companyInput.value = user.company || '';
+            roleInput.value = user.role || '';
         }
 
+        // Enable editing when "Edit Profile" is clicked
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', () => {
+                nameInput.disabled = false;
+                emailInput.disabled = false;
+                companyInput.disabled = false;
+                roleInput.disabled = false;
+
+                editProfileBtn.style.display = 'none';
+                saveProfileBtn.style.display = 'inline-block';
+                showToast('Profile unlocked for editing.', 'info');
+            });
+        }
+
+        // Save updated profile data
         profileForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value.trim();
+            const email = emailInput.value.trim();
 
             if (!isValidEmail(email)) {
                 showToast('Please enter a valid email address.', 'error');
@@ -150,14 +173,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const userData = {
-                name: document.getElementById('name').value.trim(),
+                name: nameInput.value.trim(),
                 email: email,
-                company: document.getElementById('company').value.trim(),
-                role: document.getElementById('role').value.trim()
+                company: companyInput.value.trim(),
+                role: roleInput.value.trim()
             };
 
             DataService.saveUser(userData).then(() => {
                 showToast('Profile saved successfully!');
+
+                // Re-lock fields after saving
+                nameInput.disabled = true;
+                emailInput.disabled = true;
+                companyInput.disabled = true;
+                roleInput.disabled = true;
+
+                saveProfileBtn.style.display = 'none';
+                editProfileBtn.style.display = 'inline-block';
             });
         });
     }
