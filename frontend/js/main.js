@@ -396,3 +396,85 @@ document.querySelectorAll('.delete-meeting-btn').forEach(button => {
         });
     }
 });
+// --- Milestone A: Signup Form Handling ---
+document.addEventListener('DOMContentLoaded', () => {
+    const signupForm = document.getElementById('signupForm');
+    if (signupForm) {
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+
+            if (!username || !email || !password) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            // Save user via DataService / localStorage
+            try {
+                const existingUsers = JSON.parse(localStorage.getItem('mpa_users')) || [];
+                
+                // Check if email or username already exists
+                const userExists = existingUsers.some(u => u.email === email || u.username === username);
+                if (userExists) {
+                    showToast('An account with this email or username already exists.', 'error');
+                    return;
+                }
+
+                existingUsers.push({ username, email, password, createdAt: new Date().toISOString() });
+                localStorage.setItem('mpa_users', JSON.stringify(existingUsers));
+
+                showToast('Account created successfully! Redirecting to login...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } catch (error) {
+                console.error('Signup error:', error);
+                showToast('Error saving account. Please try again.', 'error');
+            }
+        });
+    }
+});
+
+// --- Milestone B: Login Form Handling ---
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!identifier || !password) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            try {
+                const existingUsers = JSON.parse(localStorage.getItem('mpa_users')) || [];
+                
+                // Match either username or email and password
+                const validUser = existingUsers.find(u => 
+                    (u.username === identifier || u.email === identifier) && u.password === password
+                );
+
+                if (validUser) {
+                    localStorage.setItem('mpa_current_user', JSON.stringify(validUser));
+                    showToast('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    showToast('Invalid username/email or password.', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('An error occurred during login. Please try again.', 'error');
+            }
+        });
+    }
+});

@@ -350,3 +350,41 @@ p {
         flex-direction: column;
     }
 }
+
+/* --- Auth Pages Styling Polish --- */
+.form-section {
+    max-width: 450px;
+    margin: 3rem auto;
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.form-section h2 {
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.form-section p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.auth-redirect {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.auth-redirect a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-redirect a:hover {
+    text-decoration: underline;
+}
