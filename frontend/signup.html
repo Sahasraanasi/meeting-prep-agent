@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Prep Agent - Signup</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">Meeting Prep Agent</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="signup.html" class="active">Signup</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="form-section">
+            <h2>Create Your Account</h2>
+            <p>Join to manage your contacts and prepare for meetings seamlessly.</p>
+            
+            <form id="signupForm" class="card-form">
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" required placeholder="Enter your username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required minlength="6" placeholder="At least 6 characters">
+                </div>
+
+                <button type="submit" class="btn-primary">Sign Up</button>
+            </form>
+            <p class="auth-redirect">Already have an account? <a href="login.html">Login here</a>.</p>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
