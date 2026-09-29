@@ -1,13 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { getContacts, createContact } = require('../controllers/contactController');
+const {
+  getContacts,
+  createContact,
+  updateContact,
+  deleteContact
+} = require('../controllers/contactController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Milestone D: Protect all contact routes
+// Protect all contact routes
 router.use(protect);
 
 router.route('/')
   .get(getContacts)
   .post(createContact);
+
+router.route('/:id')
+  .put(updateContact)
+  .delete(deleteContact);
 
 module.exports = router;

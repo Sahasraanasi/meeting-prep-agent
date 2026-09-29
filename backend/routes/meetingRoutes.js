@@ -1,13 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { getMeetings, createMeeting } = require('../controllers/meetingController');
+const {
+  getMeetings,
+  createMeeting,
+  updateMeeting,
+  deleteMeeting
+} = require('../controllers/meetingController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Milestone D: Protect all meeting routes
+// Protect all meeting routes
 router.use(protect);
 
 router.route('/')
   .get(getMeetings)
   .post(createMeeting);
+
+router.route('/:id')
+  .put(updateMeeting)
+  .delete(deleteMeeting);
 
 module.exports = router;
