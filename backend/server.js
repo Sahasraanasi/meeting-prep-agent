@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const connectDB = require('./config/db');
 
 const contactRoutes = require('./routes/contactRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
@@ -9,6 +10,9 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Connect Database
+connectDB();
 
 // Middleware
 app.use(cors());
