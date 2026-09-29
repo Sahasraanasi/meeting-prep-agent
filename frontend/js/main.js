@@ -1,4 +1,10 @@
 /**
+ * Global Editing State & Helpers
+ */
+let editingContactId = null;
+let editingMeetingId = null;
+
+/**
  * Custom Toast Notification System
  */
 function showToast(message, type = 'success') {
@@ -50,8 +56,6 @@ function isValidEmail(email) {
 
 /**
  * DataService: Abstraction layer for data persistence.
- * Currently uses localStorage. 
- * NOTE FOR BACKEND INTEGRATION: Replace these methods with fetch() calls to Express API endpoints.
  */
 const DataService = {
     getUser: () => JSON.parse(localStorage.getItem('meetingAgentUser')) || {},
@@ -74,6 +78,52 @@ const DataService = {
         meetings.push(meetingData);
         localStorage.setItem('meetingAgentMeetings', JSON.stringify(meetings));
         return Promise.resolve(meetingData);
+    }
+};
+
+/**
+ * Milestone C: Edit Helper Functions (Global Scope)
+ */
+window.editContact = function(contactEmail) {
+    const contacts = DataService.getContacts();
+    const contact = contacts.find(c => c.email === contactEmail);
+    if (contact) {
+        document.getElementById('contactName').value = contact.name || '';
+        document.getElementById('contactCompany').value = contact.company || '';
+        document.getElementById('contactJobTitle').value = contact.jobTitle || '';
+        document.getElementById('contactEmail').value = contact.email || '';
+        document.getElementById('contactPhone').value = contact.phone || '';
+        
+        editingContactId = contactEmail;
+        const submitBtn = document.querySelector('#contactForm button[type="submit"]');
+        if (submitBtn) submitBtn.textContent = 'Update Contact';
+        showToast('Contact loaded for editing.', 'info');
+    }
+};
+
+window.editMeeting = function(meetingIndex) {
+    const meetings = DataService.getMeetings();
+    const meeting = meetings[meetingIndex];
+    if (meeting) {
+        const contactSelect = document.getElementById('contactSelect');
+        if (contactSelect) contactSelect.value = meeting.contactId || '';
+        
+        const meetingTitle = document.getElementById('meetingTitle');
+        if (meetingTitle) meetingTitle.value = meeting.title || '';
+        
+        const meetingDate = document.getElementById('meetingDate');
+        if (meetingDate) meetingDate.value = meeting.date || '';
+        
+        const meetingNotes = document.getElementById('meetingNotes');
+        if (meetingNotes) meetingNotes.value = meeting.notes || '';
+        
+        const meetingSummary = document.getElementById('meetingSummary');
+        if (meetingSummary) meetingSummary.value = meeting.summary || '';
+        
+        editingMeetingId = meetingIndex;
+        const saveBtn = document.querySelector('#meetingForm button[type="submit"]');
+        if (saveBtn) saveBtn.textContent = 'Update Meeting';
+        showToast('Meeting loaded for editing.', 'info');
     }
 };
 
@@ -126,84 +176,90 @@ document.addEventListener('DOMContentLoaded', () => {
 
             contactsList.innerHTML = '';
             contacts.forEach((contact, index) => {
-    const card = document.createElement('div');
-    card.className = 'contact-card';
+                const card = document.createElement('div');
+                card.className = 'contact-card';
 
-    card.innerHTML = `
-        <h4>${contact.name} (${contact.jobTitle})</h4>
-        <p><strong>Company:</strong> ${contact.company}</p>
-        <p><strong>Email:</strong> ${contact.email}</p>
-        <p><strong>Phone:</strong> ${contact.phone}</p>
+                card.innerHTML = `
+                    <h4>${contact.name} (${contact.jobTitle})</h4>
+                    <p><strong>Company:</strong> ${contact.company}</p>
+                    <p><strong>Email:</strong> ${contact.email}</p>
+                    <p><strong>Phone:</strong> ${contact.phone}</p>
 
-        <button class="delete-contact-btn"
-                data-index="${index}"
-                style="
-                    margin-top:10px;
-                    background:#e74c3c;
-                    color:white;
-                    border:none;
-                    padding:8px 12px;
-                    border-radius:4px;
-                    cursor:pointer;">
-            Delete
-        </button>
-    `;
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button onclick="editContact('${contact.email}')"
+                                type="button"
+                                style="background:#3b82f6; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
+                            Edit
+                        </button>
+                        <button class="delete-contact-btn"
+                                data-index="${index}"
+                                type="button"
+                                style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
+                            Delete
+                        </button>
+                    </div>
+                `;
+                contactsList.appendChild(card);
+            });
 
-    contactsList.appendChild(card);
-});
-
-document.querySelectorAll('.delete-contact-btn').forEach(button => {
-    button.addEventListener('click', () => {
-
-        const index = button.dataset.index;
-
-        const contacts = DataService.getContacts();
-
-        contacts.splice(index, 1);
-
-        localStorage.setItem(
-            'meetingAgentContacts',
-            JSON.stringify(contacts)
-        );
-
-        renderContacts();
-
-        showToast('Contact deleted successfully!');
-    });
-});
+            document.querySelectorAll('.delete-contact-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const index = button.dataset.index;
+                    const contacts = DataService.getContacts();
+                    contacts.splice(index, 1);
+                    localStorage.setItem('meetingAgentContacts', JSON.stringify(contacts));
+                    renderContacts();
+                    showToast('Contact deleted successfully!');
+                });
+            });
         };
 
         renderContacts();
 
-       contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-    const email = document.getElementById('contactEmail').value.trim();
-    const phone = document.getElementById('contactPhone').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const phone = document.getElementById('contactPhone').value.trim();
+            const name = document.getElementById('contactName').value.trim();
+            const company = document.getElementById('contactCompany').value.trim();
+            const jobTitle = document.getElementById('contactJobTitle').value.trim();
 
-    if (!isValidEmail(email)) {
-        showToast('Please enter a valid email address for the contact.', 'error');
-        return;
-    }
+            if (!isValidEmail(email)) {
+                showToast('Please enter a valid email address for the contact.', 'error');
+                return;
+            }
 
-    if (!/^[0-9]{10}$/.test(phone)) {
-        showToast('Please enter a valid 10-digit phone number.', 'error');
-        return;
-    }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                showToast('Please enter a valid 10-digit phone number.', 'error');
+                return;
+            }
 
-    const newContact = {
-                name: document.getElementById('contactName').value.trim(),
-                company: document.getElementById('contactCompany').value.trim(),
-                jobTitle: document.getElementById('contactJobTitle').value.trim(),
-                email: email,
-                phone: phone
-            };
+            if (editingContactId !== null) {
+                let contacts = DataService.getContacts();
+                contacts = contacts.map(c => {
+                    if (c.email === editingContactId) {
+                        return { ...c, name, company, jobTitle, email, phone };
+                    }
+                    return c;
+                });
+                localStorage.setItem('meetingAgentContacts', JSON.stringify(contacts));
+                
+                editingContactId = null;
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.textContent = 'Add Contact';
 
-            DataService.addContact(newContact).then(() => {
                 contactForm.reset();
                 renderContacts();
-                showToast('Contact added successfully!');
-            });
+                showToast('Contact updated successfully!');
+            } else {
+                const newContact = { name, company, jobTitle, email, phone };
+                DataService.addContact(newContact).then(() => {
+                    contactForm.reset();
+                    renderContacts();
+                    showToast('Contact added successfully!');
+                });
+            }
         });
     }
 
@@ -214,7 +270,6 @@ document.querySelectorAll('.delete-contact-btn').forEach(button => {
         const generateSummaryBtn = document.getElementById('generateSummaryBtn');
         const meetingsList = document.getElementById('meetingsList');
 
-        // Populate contacts dropdown
         const contacts = DataService.getContacts();
         contacts.forEach((contact) => {
             const option = document.createElement('option');
@@ -231,107 +286,114 @@ document.querySelectorAll('.delete-contact-btn').forEach(button => {
             }
 
             meetingsList.innerHTML = '';
-           meetings.forEach((meeting, index) => {
-    const card = document.createElement('div');
-    card.className = 'meeting-card';
+            meetings.forEach((meeting, index) => {
+                const card = document.createElement('div');
+                card.className = 'meeting-card';
 
-    card.innerHTML = `
-        <h4>${meeting.title}</h4>
-        <p><strong>Date:</strong> ${new Date(meeting.date).toLocaleString()}</p>
-        <p><strong>Contact:</strong> ${meeting.contactId}</p>
-        <p><strong>Notes:</strong> ${meeting.notes}</p>
-        <p><strong>Summary:</strong> ${meeting.summary || 'No summary provided.'}</p>
+                card.innerHTML = `
+                    <h4>${meeting.title}</h4>
+                    <p><strong>Date:</strong> ${new Date(meeting.date).toLocaleString()}</p>
+                    <p><strong>Contact:</strong> ${meeting.contactId}</p>
+                    <p><strong>Notes:</strong> ${meeting.notes}</p>
+                    <p><strong>Summary:</strong> ${meeting.summary || 'No summary provided.'}</p>
 
-        <button class="delete-meeting-btn"
-                data-index="${index}"
-                style="
-                    margin-top:10px;
-                    background:#e74c3c;
-                    color:white;
-                    border:none;
-                    padding:8px 12px;
-                    border-radius:4px;
-                    cursor:pointer;">
-            Delete Meeting
-        </button>
-    `;
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button onclick="editMeeting(${index})"
+                                type="button"
+                                style="background:#3b82f6; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
+                            Edit
+                        </button>
+                        <button class="delete-meeting-btn"
+                                data-index="${index}"
+                                type="button"
+                                style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
+                            Delete Meeting
+                        </button>
+                    </div>
+                `;
+                meetingsList.appendChild(card);
+            });
 
-    meetingsList.appendChild(card);
-});
-document.querySelectorAll('.delete-meeting-btn').forEach(button => {
-    button.addEventListener('click', () => {
-
-        const index = button.dataset.index;
-
-        const meetings = DataService.getMeetings();
-
-        meetings.splice(index, 1);
-
-        localStorage.setItem(
-            'meetingAgentMeetings',
-            JSON.stringify(meetings)
-        );
-
-        renderMeetings();
-
-        showToast('Meeting deleted successfully!');
-    });
-});
+            document.querySelectorAll('.delete-meeting-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const index = button.dataset.index;
+                    const meetings = DataService.getMeetings();
+                    meetings.splice(index, 1);
+                    localStorage.setItem('meetingAgentMeetings', JSON.stringify(meetings));
+                    renderMeetings();
+                    showToast('Meeting deleted successfully!');
+                });
+            });
         };
 
         renderMeetings();
 
-        generateSummaryBtn.addEventListener('click', async () => {
-    const notes = document.getElementById('meetingNotes').value.trim();
+        if (generateSummaryBtn) {
+            generateSummaryBtn.addEventListener('click', async () => {
+                const notes = document.getElementById('meetingNotes').value.trim();
 
-    if (!notes) {
-        showToast('Please enter some meeting notes first!', 'error');
-        return;
-    }
+                if (!notes) {
+                    showToast('Please enter some meeting notes first!', 'error');
+                    return;
+                }
 
-    setLoadingState(generateSummaryBtn, null, true);
+                setLoadingState(generateSummaryBtn, null, true);
 
-    try {
-        const response = await fetch('http://localhost:5000/ai/summary', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ notes })
-        });
+                try {
+                    const response = await fetch('http://localhost:5000/ai/summary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ notes })
+                    });
 
-        const result = await response.json();
+                    const result = await response.json();
 
-        if (result.success) {
-            document.getElementById('meetingSummary').value = result.data;
-            showToast('Summary generated successfully!');
-        } else {
-            showToast('Failed to generate summary.', 'error');
+                    if (result.success) {
+                        document.getElementById('meetingSummary').value = result.data;
+                        showToast('Summary generated successfully!');
+                    } else {
+                        showToast('Failed to generate summary.', 'error');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast('Backend connection failed.', 'error');
+                }
+
+                setLoadingState(generateSummaryBtn, null, false, "Generate Summary");
+            });
         }
-    } catch (error) {
-        console.error(error);
-        showToast('Backend connection failed.', 'error');
-    }
-
-    setLoadingState(generateSummaryBtn, null, false, "Generate Summary");
-});
 
         meetingForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const newMeeting = {
-                title: document.getElementById('meetingTitle').value.trim(),
-                date: document.getElementById('meetingDate').value,
-                contactId: contactSelect.value,
-                notes: document.getElementById('meetingNotes').value.trim(),
-                summary: document.getElementById('meetingSummary').value.trim()
-            };
+            const title = document.getElementById('meetingTitle').value.trim();
+            const date = document.getElementById('meetingDate').value;
+            const contactId = contactSelect.value;
+            const notes = document.getElementById('meetingNotes').value.trim();
+            const summary = document.getElementById('meetingSummary').value.trim();
 
-            DataService.addMeeting(newMeeting).then(() => {
+            if (editingMeetingId !== null) {
+                let meetings = DataService.getMeetings();
+                meetings[editingMeetingId] = { title, date, contactId, notes, summary };
+                localStorage.setItem('meetingAgentMeetings', JSON.stringify(meetings));
+
+                editingMeetingId = null;
+                const saveBtn = meetingForm.querySelector('button[type="submit"]');
+                if (saveBtn) saveBtn.textContent = 'Save Meeting';
+
                 meetingForm.reset();
                 renderMeetings();
-                showToast('Meeting saved successfully!');
-            });
+                showToast('Meeting updated successfully!');
+            } else {
+                const newMeeting = { title, date, contactId, notes, summary };
+                DataService.addMeeting(newMeeting).then(() => {
+                    meetingForm.reset();
+                    renderMeetings();
+                    showToast('Meeting saved successfully!');
+                });
+            }
         });
     }
 
@@ -395,9 +457,8 @@ document.querySelectorAll('.delete-meeting-btn').forEach(button => {
             `;
         });
     }
-});
-// --- Milestone A: Signup Form Handling ---
-document.addEventListener('DOMContentLoaded', () => {
+
+    /* ================= 5. AUTHENTICATION PAGES LOGIC ================= */
     const signupForm = document.getElementById('signupForm');
     if (signupForm) {
         signupForm.addEventListener('submit', (e) => {
@@ -412,11 +473,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Save user via DataService / localStorage
             try {
                 const existingUsers = JSON.parse(localStorage.getItem('mpa_users')) || [];
-                
-                // Check if email or username already exists
                 const userExists = existingUsers.some(u => u.email === email || u.username === username);
                 if (userExists) {
                     showToast('An account with this email or username already exists.', 'error');
@@ -427,7 +485,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('mpa_users', JSON.stringify(existingUsers));
 
                 showToast('Account created successfully! Redirecting to login...', 'success');
-                
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 1500);
@@ -437,10 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
 
-// --- Milestone B: Login Form Handling ---
-document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
@@ -456,8 +510,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const existingUsers = JSON.parse(localStorage.getItem('mpa_users')) || [];
-                
-                // Match either username or email and password
                 const validUser = existingUsers.find(u => 
                     (u.username === identifier || u.email === identifier) && u.password === password
                 );
