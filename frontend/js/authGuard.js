@@ -55,7 +55,7 @@
 
     // 3. Global logout handler
     window.logout = function () {
-        // Clear all session and authentication keys
+        // Clear all session and authentication keys (keeping user profile intact)
         localStorage.removeItem('mpa_current_user');
         localStorage.removeItem('token');
         sessionStorage.clear();
@@ -64,24 +64,15 @@
         window.location.replace('login.html');
     };
 
-    // 4. Automatically inject Logout button into navigation on protected pages
-    document.addEventListener('DOMContentLoaded', function () {
-        if (protectedPages.includes(page)) {
-            const navUl = document.querySelector('header nav ul');
-            if (navUl && !document.getElementById('navLogoutItem')) {
-                const li = document.createElement('li');
-                li.id = 'navLogoutItem';
-                li.innerHTML = '<a href="#" id="logoutBtn" style="color: #e74c3c; font-weight: bold;">Logout</a>';
-                navUl.appendChild(li);
-
-                const logoutBtn = document.getElementById('logoutBtn');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        window.logout();
-                    });
-                }
-            }
+    // 4. Bind click event to any existing logout button on the page (like index.html)
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.logout();
+            });
         }
     });
+
 })();
