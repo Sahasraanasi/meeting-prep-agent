@@ -388,3 +388,37 @@ p {
 .auth-redirect a:hover {
     text-decoration: underline;
 }
+
+/* --- Milestone D: Meeting Page UX Polish --- */
+.meeting-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #3b82f6;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meeting-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.meeting-card h4 {
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.meeting-card p {
+    color: #475569;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+}
+
+.meeting-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+}
