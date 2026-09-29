@@ -56,11 +56,29 @@ function isValidEmail(email) {
 
 /**
  * DataService: Abstraction layer for data persistence.
+ * Updated to isolate user profile data by current user identifier.
  */
 const DataService = {
-    getUser: () => JSON.parse(localStorage.getItem('meetingAgentUser')) || {},
+    getCurrentUserEmail: () => {
+        try {
+            const currentUser = JSON.parse(localStorage.getItem('mpa_current_user'));
+            return currentUser ? currentUser.email : null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    getUser: () => {
+        const email = DataService.getCurrentUserEmail();
+        if (!email) return {};
+        return JSON.parse(localStorage.getItem(`meetingAgentUser_${email}`)) || {};
+    },
+    
     saveUser: (userData) => {
-        localStorage.setItem('meetingAgentUser', JSON.stringify(userData));
+        const email = DataService.getCurrentUserEmail();
+        if (email) {
+            localStorage.setItem(`meetingAgentUser_${email}`, JSON.stringify(userData));
+        }
         return Promise.resolve(userData);
     },
 
@@ -140,12 +158,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const editProfileBtn = document.getElementById('editProfileBtn');
         const saveProfileBtn = document.getElementById('saveProfileBtn');
 
-        // Populate initial user data if available
+        // Populate initial user data if available for the current user, otherwise leave empty
         if (user.name) {
             nameInput.value = user.name || '';
             emailInput.value = user.email || '';
             companyInput.value = user.company || '';
             roleInput.value = user.role || '';
+        } else {
+            nameInput.value = '';
+            // Pre-fill email from session if available, else blank
+            const sessionEmail = DataService.getCurrentUserEmail();
+            emailInput.value = sessionEmail || '';
+            companyInput.value = '';
+            roleInput.value = '';
         }
 
         // Enable editing when "Edit Profile" is clicked
@@ -562,14 +587,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-// ... (your existing functions and event listeners in main.js) ...
 
-// PASTE THE LOGOUT SCRIPT AT THE VERY BOTTOM OF THE FILE:
 document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             // Clear user session from localStorage
+            localStorage.removeItem('mpa_current_user');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('isLoggedIn');
